@@ -2,6 +2,7 @@ use_frameworks!
 
 target 'QNDataManager_Example' do
   pod 'QNDataManager', :path => '../'
+  pod 'leveled-pd', :git => 'https://github.com/hhtczengjing/leveldb-pd.git'
 
   target 'QNDataManager_Tests' do
     inherit! :search_paths

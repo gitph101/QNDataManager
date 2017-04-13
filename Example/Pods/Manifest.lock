@@ -1,0 +1,16 @@
+PODS:
+  - QNDataManager (0.1.0)
+
+DEPENDENCIES:
+  - QNDataManager (from `../`)
+
+EXTERNAL SOURCES:
+  QNDataManager:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  QNDataManager: f36e4e5ef39aca32b59ef6e723b089f75765ded9
+
+PODFILE CHECKSUM: 80517e6bc38f862e95105744d3e3a2237bbffc5b
+
+COCOAPODS: 1.2.0

@@ -3,6 +3,7 @@
 target 'QNDataManager_Example' do
   pod 'QNDataManager', :path => '../'
   pod 'Objective-LevelDB'
+  pod 'YYModel'
   target 'QNDataManager_Tests' do
     inherit! :search_paths
 

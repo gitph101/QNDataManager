@@ -1,7 +1,11 @@
 PODS:
+  - leveldb-library (1.18.2)
+  - Objective-LevelDB (2.1.5):
+    - leveldb-library (~> 1.18.2)
   - QNDataManager (0.1.0)
 
 DEPENDENCIES:
+  - Objective-LevelDB
   - QNDataManager (from `../`)
 
 EXTERNAL SOURCES:
@@ -9,8 +13,10 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
+  leveldb-library: ef0453697c0fda3a9e550e5650e52976e6724548
+  Objective-LevelDB: fa075efd9d0be645aee51847cc3ee70cdadb80ce
   QNDataManager: f36e4e5ef39aca32b59ef6e723b089f75765ded9
 
-PODFILE CHECKSUM: 80517e6bc38f862e95105744d3e3a2237bbffc5b
+PODFILE CHECKSUM: b416c6a47fa8541d6dd76dcce68f95f69806a831
 
 COCOAPODS: 1.2.0

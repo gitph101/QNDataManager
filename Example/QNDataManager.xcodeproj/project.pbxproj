@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5D3EB8F4E00C2602ABEEE605 /* Pods_QNDataManager_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 221B2DD037164A8ACD78572A /* Pods_QNDataManager_Tests.framework */; };
+		35F3146AC3BD5813E21735C9 /* libPods-QNDataManager_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C9D409EE860ED9B4F650B5F /* libPods-QNDataManager_Tests.a */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -21,9 +21,10 @@
 		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
+		6F07203DDEBBB2E6921C15B3 /* libPods-QNDataManager_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C96458A382A48C527542EE2A /* libPods-QNDataManager_Example.a */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
-		EF8450C034E8189F2E05FF2C /* Pods_QNDataManager_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B8DC5D91770F01C6C236A35 /* Pods_QNDataManager_Example.framework */; };
+		E2B3AD9C1EA0685600623AFD /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B3AD9B1EA0685600623AFD /* libc++.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,9 +38,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		221B2DD037164A8ACD78572A /* Pods_QNDataManager_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QNDataManager_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		23C9F509BE5E797E8AA1266B /* Pods-QNDataManager_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QNDataManager_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QNDataManager_Tests/Pods-QNDataManager_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		5B8DC5D91770F01C6C236A35 /* Pods_QNDataManager_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_QNDataManager_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C9D409EE860ED9B4F650B5F /* libPods-QNDataManager_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QNDataManager_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58A195388D20070C39A /* QNDataManager_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QNDataManager_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -64,9 +64,11 @@
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B5F5CE2746EE6A1C0E515CCE /* Pods-QNDataManager_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QNDataManager_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QNDataManager_Tests/Pods-QNDataManager_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		C9444EEAD33A49A0FFBEAC91 /* Pods-QNDataManager_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QNDataManager_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QNDataManager_Example/Pods-QNDataManager_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		EB7E0F2B7399C91EFD355AA2 /* QNDataManager.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = QNDataManager.podspec; path = ../QNDataManager.podspec; sourceTree = "<group>"; };
-		FA715FDA3DF01DE3D54D58AB /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		FE722655EF1D90D4E8B069FA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		C96458A382A48C527542EE2A /* libPods-QNDataManager_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QNDataManager_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2B3AD9B1EA0685600623AFD /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		EB7E0F2B7399C91EFD355AA2 /* QNDataManager.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = QNDataManager.podspec; path = ../QNDataManager.podspec; sourceTree = "<group>"; };
+		FA715FDA3DF01DE3D54D58AB /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		FE722655EF1D90D4E8B069FA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,10 +76,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2B3AD9C1EA0685600623AFD /* libc++.tbd in Frameworks */,
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				EF8450C034E8189F2E05FF2C /* Pods_QNDataManager_Example.framework in Frameworks */,
+				6F07203DDEBBB2E6921C15B3 /* libPods-QNDataManager_Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +91,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				5D3EB8F4E00C2602ABEEE605 /* Pods_QNDataManager_Tests.framework in Frameworks */,
+				35F3146AC3BD5813E21735C9 /* libPods-QNDataManager_Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,12 +133,13 @@
 		6003F58C195388D20070C39A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E2B3AD9B1EA0685600623AFD /* libc++.tbd */,
 				6003F58D195388D20070C39A /* Foundation.framework */,
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				5B8DC5D91770F01C6C236A35 /* Pods_QNDataManager_Example.framework */,
-				221B2DD037164A8ACD78572A /* Pods_QNDataManager_Tests.framework */,
+				C96458A382A48C527542EE2A /* libPods-QNDataManager_Example.a */,
+				2C9D409EE860ED9B4F650B5F /* libPods-QNDataManager_Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

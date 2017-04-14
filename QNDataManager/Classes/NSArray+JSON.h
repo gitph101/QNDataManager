@@ -10,4 +10,7 @@
 
 @interface NSArray (JSON)
 
+- (NSData*) tt_JsonData;
+- (NSData*) tt_jsonDataWithYYModel;
+
 @end

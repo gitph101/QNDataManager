@@ -7,6 +7,8 @@
 //
 
 #import "QNDataBase.h"
+#import "LevelDB.h"
+#import "TTLocalPathHelper.h"
 
 static QNDataBase* dataBase = nil;
 static dispatch_queue_t TTCacheDBQueue = nil;

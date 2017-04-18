@@ -25,6 +25,7 @@
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		E2B3AD9C1EA0685600623AFD /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E2B3AD9B1EA0685600623AFD /* libc++.tbd */; };
+		E2E74D151EA616530071144C /* DemoModel.m in Sources */ = {isa = PBXBuildFile; fileRef = E2E74D141EA616530071144C /* DemoModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,8 @@
 		C9444EEAD33A49A0FFBEAC91 /* Pods-QNDataManager_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QNDataManager_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QNDataManager_Example/Pods-QNDataManager_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		C96458A382A48C527542EE2A /* libPods-QNDataManager_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QNDataManager_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2B3AD9B1EA0685600623AFD /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		E2E74D131EA616530071144C /* DemoModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoModel.h; sourceTree = "<group>"; };
+		E2E74D141EA616530071144C /* DemoModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoModel.m; sourceTree = "<group>"; };
 		EB7E0F2B7399C91EFD355AA2 /* QNDataManager.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = QNDataManager.podspec; path = ../QNDataManager.podspec; sourceTree = "<group>"; };
 		FA715FDA3DF01DE3D54D58AB /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		FE722655EF1D90D4E8B069FA /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
@@ -152,6 +155,8 @@
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
 				6003F5A5195388D20070C39A /* QNViewController.h */,
 				6003F5A6195388D20070C39A /* QNViewController.m */,
+				E2E74D131EA616530071144C /* DemoModel.h */,
+				E2E74D141EA616530071144C /* DemoModel.m */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
@@ -398,6 +403,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2E74D151EA616530071144C /* DemoModel.m in Sources */,
 				6003F59E195388D20070C39A /* QNAppDelegate.m in Sources */,
 				6003F5A7195388D20070C39A /* QNViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,

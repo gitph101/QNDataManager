@@ -7,6 +7,8 @@
 //
 
 #import "QNViewController.h"
+#import "QNDiskCache.h"
+#import "DemoModel.h"
 
 @interface QNViewController ()
 
@@ -17,6 +19,21 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    QNDiskCache *disk = [[QNDiskCache alloc]initWithCapacity:1024*1024];
+    [disk setString:@"2222" forKey:@"key" age:0];
+    NSLog(@"%@",[disk stringValueForKey:@"key"]);
+    
+    
+    DemoModel *model = [[DemoModel alloc]init];
+    model.name = @"hello";
+    model.age = @"25";
+    
+    [disk setORMItem:[NSArray arrayWithObject:model] forKey:@"keyArray" age:0];
+    
+    
+    NSLog(@"Array : %@",[disk stringValueForKey:@"keyArray"]);
+
+    
 	// Do any additional setup after loading the view, typically from a nib.
 }
 

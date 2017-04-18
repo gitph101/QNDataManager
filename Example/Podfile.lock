@@ -1,13 +1,19 @@
 PODS:
+  - FMDB (2.6.2):
+    - FMDB/standard (= 2.6.2)
+  - FMDB/standard (2.6.2)
   - leveldb-library (1.18.2)
   - Objective-LevelDB (2.1.5):
     - leveldb-library (~> 1.18.2)
   - QNDataManager (0.1.0)
+  - YTKKeyValueStore (0.1.2):
+    - FMDB (~> 2.0)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
   - Objective-LevelDB
   - QNDataManager (from `../`)
+  - YTKKeyValueStore
   - YYModel
 
 EXTERNAL SOURCES:
@@ -15,11 +21,13 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
+  FMDB: 854a0341b4726e53276f2a8996f06f1b80f9259a
   leveldb-library: ef0453697c0fda3a9e550e5650e52976e6724548
   Objective-LevelDB: fa075efd9d0be645aee51847cc3ee70cdadb80ce
   QNDataManager: f36e4e5ef39aca32b59ef6e723b089f75765ded9
+  YTKKeyValueStore: 4d002941540dd5108fa23009b71e0f2f937f7a0f
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: d68e781c90dd569a99e0bb375f3d2a673f1d2326
+PODFILE CHECKSUM: 83c8fc6f31971ff3281dc78d7fc58e7613cc5556
 
 COCOAPODS: 1.2.0

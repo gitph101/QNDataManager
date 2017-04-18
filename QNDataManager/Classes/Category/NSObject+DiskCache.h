@@ -9,6 +9,6 @@
 
 @interface NSObject (DiskCache)
 
-@property (nonatomic, assign) BOOL tt_fromCache;
+@property (nonatomic, assign) BOOL fromCache;
 
 @end

@@ -10,7 +10,7 @@
 
 @implementation NSData (JSON)
 
-- (id) tt_JsonObject
+- (id) JsonObject
 {
     return [NSJSONSerialization JSONObjectWithData:self
                                            options:0

@@ -10,6 +10,6 @@
 
 @interface NSData (JSON)
 
-- (id) tt_JsonObject;
+- (id) JsonObject;
 
 @end

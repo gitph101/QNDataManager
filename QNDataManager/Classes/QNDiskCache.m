@@ -9,9 +9,11 @@
 #import "QNDiskCache.h"
 #import "NSString+MD5.h"
 #import "QNDBHelper.h"
-#import "TTDiskCacheIndexModel.h"
+#import "QNDiskCacheIndexModel.h"
 #import "NSArray+JSON.h"
 #import "YYModel.h"
+#import "NSObject+DiskCache.h"
+#import "NSData+JSON.h"
 
 #define SEPERATOR_MODELS @"#"
 
@@ -47,6 +49,8 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
     QNDiskCacheIoQueue = dispatch_queue_create("com.soufun.disk.resource.cache", DISPATCH_QUEUE_SERIAL);
 }
 
+#pragma mark - public
+
 - (instancetype) initWithCapacity: (NSUInteger)capacity
                              name: (NSString* ) name
 {
@@ -77,7 +81,7 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
             self.capacity = capacity;
             if (0 != self.capacity && self.currentUsage >= self.capacity)
             {
-                [self poorData];
+                [self _qn_poorData];
             }
         }
     }
@@ -85,119 +89,54 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
     return self;
 }
 
-
-#pragma mark - Clean
-
-- (void) poorData
+- (instancetype) initWithCapacity: (NSUInteger) capacity
 {
-    //处理过期数据
-    [self removeAllExpiredData];
-    
-    
-    if (self.capacity == 0 || self.currentUsage < self.capacity) {
-        return;
-    }
-    
-    // TODO: 可以优化 self.index 本身的排序, 以及可以考虑使用类似 LRU 的缓存策略
-    NSArray* arr = [self.index sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        TTDiskCacheIndexModel* m1 = obj1;
-        TTDiskCacheIndexModel* m2 = obj2;
-        
-        return m1.age + m1.createdTime - m2.age - m2.createdTime;
-    }];
-    
-    for (TTDiskCacheIndexModel* m in arr) {
-        [self removeObjectForkey:m.key md5ed:YES];
-        if (self.currentUsage < self.capacity)
-            break;
-    }
-}
-
-- (void)removeObjectForkey:(NSString *)key md5ed:(BOOL)isMd5Format
-{
-#if DEBUG
-    NSLog(@"DISK_CACHE Delete: %@", key);
-#endif
-    
-    if (!isMd5Format)
-    {
-        key = [key MD5Hash];
-    }
-    
-    @synchronized(self)
-    {
-        TTDiskCacheIndexModel* model = self.indexDic[key];
-        
-        if (model)
-        {
-            [self deleteModel:model];
-            [self saveIndex];
-            
-            if (model.saveInDisk) {
-                [self removeResourceWithKey:key];
-            } else {
-                [[QNDBHelper sharedInstance] removeValueForKey:key fromDB:self.dbName];
-            }
-#warning warm
-            // TODO: 目前的磁盘资源删除为异步操作, 需要优化
-//            [self.subject sendNext:model];
-        }
-    }
+    return [self initWithCapacity: capacity
+                             name: @"cache.db"];
 }
 
 
-- (void)deleteModel:(TTDiskCacheIndexModel*)model
+- (NSUInteger) capacity
 {
-    @synchronized(self)
-    {
-        NSUInteger index = [self.index indexOfObject:model];
-        [self.index removeObject:model];
-        self.indexDic[model.key] = nil;
-        NSRange range = [self getModelWithIndex:index];
-        if (NSNotFound != range.location)
-        {
-            [self.indexDes replaceCharactersInRange:range withString:@""];
-        }
-        
-        self.currentUsage -= model.cost;
-    }
+    return _capacity;
 }
 
-- (NSRange)getModelWithIndex:(NSInteger)index
+- (NSUInteger) currentUsage
 {
-    NSRange range = NSMakeRange(NSNotFound, 0);
-    NSArray* strArr = [self.indexDes componentsSeparatedByString:SEPERATOR_MODELS];
-    if (0 <= index && index < strArr.count)
-    {
-        NSUInteger loc = 0;
-        NSUInteger length = 0;
-        for (NSInteger i = 0; i < index; i++)
-        {
-            loc += [strArr[i] length] + 1;
-        }
-        length = [strArr[index] length] + 1;
-        range.location = loc;
-        range.length = length;
-    }
-    return range;
+    return _currentUsage;
 }
+
+#pragma mark - clean
+
 
 - (void) removeObjectForkey: (NSString*) key
 {
     [self removeObjectForkey:key md5ed:NO];
 }
 
+
+- (void) removeAllData
+{
+    // TODO: 全部删除可以优化
+    @synchronized(self){
+        NSArray *arr = [NSArray arrayWithArray:self.index];
+        for (QNDiskCacheIndexModel* m in arr) {
+            [self removeObjectForkey:m.key md5ed:YES];
+        }
+    }
+}
+
 - (void) removeAllExpiredData
 {
     NSMutableArray* expiredCache = [NSMutableArray new];
     NSUInteger now = (NSUInteger) [[NSDate date] timeIntervalSince1970];
-    for (TTDiskCacheIndexModel* model in self.index) {
+    for (QNDiskCacheIndexModel* model in self.index) {
         if (model.age != 0 && model.createdTime + model.age < now) {
             [expiredCache addObject:model];
         }
     }
     
-    for (TTDiskCacheIndexModel* model in expiredCache) {
+    for (QNDiskCacheIndexModel* model in expiredCache) {
         [self removeObjectForkey:model.key md5ed:YES];
     }
 }
@@ -220,19 +159,18 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
     
     @synchronized(self){
         NSAssert(key, @"key is nil");
-        TTDiskCacheIndexModel* model = [[TTDiskCacheIndexModel alloc] init];
-        
+        QNDiskCacheIndexModel* model = [[QNDiskCacheIndexModel alloc] init];
         model.key = key;
         model.cost = [data length];
         model.age = age;
         model.createdTime = (NSUInteger) [[NSDate date] timeIntervalSince1970];
         model.saveInDisk = saveInDisk;
         
-        [self addModel:model];
-        [self saveIndex];
+        [self _qn_addModel:model];
+        [self _qn_saveIndex];
         
         if (saveInDisk) {
-            [self saveResourceToDisk:data key:key];
+            [self _qn_saveResourceToDisk:data key:key];
         } else {
             [[QNDBHelper sharedInstance] setValue:data forKey:key toDB:self.dbName];
         }
@@ -240,7 +178,7 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
     
     if (self.capacity != 0 && self.currentUsage > self.capacity)
     {
-        [self poorData];
+        [self _qn_poorData];
     }
 }
 
@@ -275,35 +213,11 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
     }
 }
 
-- (void) setMantleItem: (id) item
-                forKey: (NSString*) key
-                   age: (NSUInteger) age
-{
-#ifdef DEBUG
-    @try {
-        [NSException exceptionWithName:@"Invalid type of Mantle" reason:@"Set mantle for cache is deprecated please use setORMItem:foKey:age: instead" userInfo:nil];
-    } @catch (NSException *exception) {
-    } @finally {
-    }
-#endif
-    if ([item isKindOfClass:[NSArray class]])
-    {
-        [self setData:[(NSArray*)item tt_jsonDataWithYYModel]
-               forKey:key
-                  age:age];
-    }
-    else
-    {
-//        NSData* data = [[MTLJSONAdapter JSONDictionaryFromModel:item] tt_JsonData];
-        NSData* data;
-        [self setData:data forKey:key age:age];
-    }
-}
 
 - (void) setORMItem: (id)item forKey:(NSString*)key age:(NSUInteger)age {
     NSData* data = nil;
     if ([item isKindOfClass:[NSArray class]]) {
-        data = [(NSArray*)item tt_jsonDataWithYYModel];
+        data = [(NSArray*)item jsonDataWithYYModel];
     } else {
         data = [item yy_modelToJSONData];
     }
@@ -329,7 +243,7 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
 {
     if ([item isKindOfClass:[NSArray class]] || [item isKindOfClass:[NSDictionary class]])
     {
-        return[self setData:[item tt_JsonData]
+        return[self setData:[item JsonData]
                      forKey:key
                         age:age];
     }
@@ -340,7 +254,178 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
 }
 
 
-#pragma mark - privi
+#pragma mark - Get
+
+- (id) valueForKey:(NSString *)key
+{
+#if DEBUG
+    NSLog(@"DISK_CACHE Load: %@", key);
+#endif
+    
+    key = [key MD5Hash];
+    
+    @synchronized(self)
+    {
+        QNDiskCacheIndexModel* model = self.indexDic[key];
+        if (!model) {
+            return nil;
+        }
+        
+        //判断过期
+        NSUInteger now = (NSUInteger) [[NSDate date] timeIntervalSince1970];
+        if (model.age != 0 && model.createdTime + model.age < now) {
+            [self removeObjectForkey:key md5ed:YES];
+            return nil;
+        }
+        
+        NSData* data = nil;
+        if (model.saveInDisk) {
+            data = [self _qn_fetchResourceWithKey:key];
+        } else {
+            data = [[QNDBHelper sharedInstance] getValueForKey:key fromeDB:self.dbName];
+        }
+        
+        return data;
+    }
+}
+
+- (NSString*) stringValueForKey: (NSString*) key
+{
+    @synchronized(self)
+    {
+        NSString* str = [[NSString alloc] initWithData:[self valueForKey:key] encoding:NSUTF8StringEncoding];
+        str.fromCache = YES;
+        return str;
+    }
+}
+
+- (id) foundationItemForKey: (NSString*) key
+{
+    NSObject* obj = [[self valueForKey:key] JsonObject];
+    obj.fromCache = YES;
+    return obj;
+}
+
+
+- (id) ormItemForKey:(NSString*)key ofClass:(Class)c {
+    id obj = [self foundationItemForKey:key];
+    id model = nil;
+    if ([obj isKindOfClass:[NSDictionary class]]) {
+        model = [c yy_modelWithJSON:obj];
+    } else if ([obj isKindOfClass:[NSArray class]]) {
+        model = [NSArray yy_modelArrayWithClass:c json:obj];
+    }
+#ifdef DEBUG
+    @try {
+        if (obj && !model) {
+            [NSException exceptionWithName:@"YYModelParseError"
+                                    reason:@"Error while transform json to model from cache.Specially, ['1', '2'] --x--> @[@'1', @'2'], [1, 2] --x--> @[@(1), @(2)]"
+                                  userInfo:nil];
+        }
+    } @catch (NSException *exception) {
+    } @finally {
+    }
+#endif
+    return model;
+}
+
+
+#pragma mark - private
+
+#pragma mark - Clean
+
+- (void) _qn_poorData
+{
+    //处理过期数据
+    [self removeAllExpiredData];
+    
+    
+    if (self.capacity == 0 || self.currentUsage < self.capacity) {
+        return;
+    }
+    
+    // TODO: 可以优化 self.index 本身的排序, 以及可以考虑使用类似 LRU 的缓存策略
+    NSArray* arr = [self.index sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        QNDiskCacheIndexModel* m1 = obj1;
+        QNDiskCacheIndexModel* m2 = obj2;
+        
+        return m1.age + m1.createdTime - m2.age - m2.createdTime;
+    }];
+    
+    for (QNDiskCacheIndexModel* m in arr) {
+        [self removeObjectForkey:m.key md5ed:YES];
+        if (self.currentUsage < self.capacity)
+            break;
+    }
+}
+
+- (void)_qn_removeObjectForkey:(NSString *)key md5ed:(BOOL)isMd5Format
+{
+#if DEBUG
+    NSLog(@"DISK_CACHE Delete: %@", key);
+#endif
+    
+    if (!isMd5Format)
+    {
+        key = [key MD5Hash];
+    }
+    
+    @synchronized(self)
+    {
+        QNDiskCacheIndexModel* model = self.indexDic[key];
+        
+        if (model)
+        {
+            [self _qn_deleteModel:model];
+            [self _qn_saveIndex];
+            
+            if (model.saveInDisk) {
+                [self _qn_removeResourceWithKey:key];
+            } else {
+                [[QNDBHelper sharedInstance] removeValueForKey:key fromDB:self.dbName];
+            }
+        }
+    }
+}
+
+
+
+- (void)_qn_deleteModel:(QNDiskCacheIndexModel*)model
+{
+    @synchronized(self)
+    {
+        NSUInteger index = [self.index indexOfObject:model];
+        [self.index removeObject:model];
+        self.indexDic[model.key] = nil;
+        NSRange range = [self _qn_getModelWithIndex:index];
+        if (NSNotFound != range.location)
+        {
+            [self.indexDes replaceCharactersInRange:range withString:@""];
+        }
+        
+        self.currentUsage -= model.cost;
+    }
+}
+
+- (NSRange)_qn_getModelWithIndex:(NSInteger)index
+{
+    NSRange range = NSMakeRange(NSNotFound, 0);
+    NSArray* strArr = [self.indexDes componentsSeparatedByString:SEPERATOR_MODELS];
+    if (0 <= index && index < strArr.count)
+    {
+        NSUInteger loc = 0;
+        NSUInteger length = 0;
+        for (NSInteger i = 0; i < index; i++)
+        {
+            loc += [strArr[i] length] + 1;
+        }
+        length = [strArr[index] length] + 1;
+        range.location = loc;
+        range.length = length;
+    }
+    return range;
+}
+
 
 - (NSString *)_qn_diskResourcePath:(NSString *)dbName {
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
@@ -348,16 +433,16 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
     return [rootPath stringByAppendingPathComponent:[dbName MD5Hash]];
 }
 
-- (void)addModel:(TTDiskCacheIndexModel*)model
+- (void)_qn_addModel:(QNDiskCacheIndexModel*)model
 {
     if (model)
     {
         //如果key已经存在，那么不应该继续加model，而应该更新
-        TTDiskCacheIndexModel* modelFound = self.indexDic[model.key];
+        QNDiskCacheIndexModel* modelFound = self.indexDic[model.key];
         
         if (modelFound)
         {
-            [self deleteModel:modelFound];
+            [self _qn_deleteModel:modelFound];
         }
         
         [self.index addObject:model];
@@ -368,7 +453,7 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
     }
 }
 
-- (void) saveIndex
+- (void) _qn_saveIndex
 {
     NSData* indexData = [self.indexDes dataUsingEncoding:NSUTF8StringEncoding];
     if (indexData)
@@ -379,7 +464,7 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
 
 #pragma mark - Resource
 
-- (void)saveResourceToDisk:(NSData *)data key:(NSString *)key {
+- (void)_qn_saveResourceToDisk:(NSData *)data key:(NSString *)key {
     dispatch_async(QNDiskCacheIoQueue, ^{
         // TODO: fileManager是否需要单独创建一个实例
         NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -394,13 +479,21 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
 
 
 
-- (void)removeResourceWithKey:(NSString *)key {
+- (void)_qn_removeResourceWithKey:(NSString *)key {
     dispatch_async(QNDiskCacheIoQueue, ^{
         NSFileManager* fileManager = [NSFileManager defaultManager];
         NSString *cachePath = [self.resourcePath stringByAppendingPathComponent:key];
         [fileManager removeItemAtPath:cachePath error:nil];
     });
 }
+
+
+- (NSData *)_qn_fetchResourceWithKey:(NSString *)key {
+    NSString *cachePath = [self.resourcePath stringByAppendingPathComponent:key];
+    NSData* data = [NSData dataWithContentsOfFile:cachePath];
+    return data;
+}
+
 
 #pragma mark - IndexDescription
 
@@ -422,7 +515,7 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
             if ([str_part isKindOfClass:[NSString class]] && 0 < str_part.length)
             {
                 NSData* data = [str_part dataUsingEncoding:NSUTF8StringEncoding];
-                TTDiskCacheIndexModel* model = [TTDiskCacheIndexModel loadFromData:data];
+                QNDiskCacheIndexModel* model = [QNDiskCacheIndexModel loadFromData:data];
                 if (model)
                 {
                     [arr_models addObject:model];
@@ -460,4 +553,7 @@ static dispatch_queue_t QNDiskCacheIoQueue = nil;
         [_indexDes appendString:SEPERATOR_MODELS];
     }
 }
+
+
+
 @end

@@ -11,14 +11,14 @@
 
 @implementation NSArray (JSON)
 
-- (NSData*) tt_JsonData
+- (NSData*) JsonData
 {
     return [NSJSONSerialization dataWithJSONObject:self
                                            options:0
                                              error:nil];
 }
 
-- (NSData*) tt_jsonDataWithYYModel {
+- (NSData*) jsonDataWithYYModel {
     NSData* data = [self yy_modelToJSONData];
     @try {
         if (!data) {

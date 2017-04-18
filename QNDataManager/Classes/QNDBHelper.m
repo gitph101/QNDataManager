@@ -8,14 +8,25 @@
 
 #import "QNDBHelper.h"
 #import "LevelDB.h"
-#import "TTLocalPathHelper.h"
+#import "YTKKeyValueStore.h"
+
+
+//是否使用SQLite作为数据库引擎
+static BOOL kQNShouldSQLite = NO;
 
 static QNDBHelper* helper = nil;
 static dispatch_queue_t QNCacheDBQueue = nil;
+static NSString* const QNSQLiteNameKey = @"com.soufun.QNSQLiteNameKey";
+
+///
+/// 两套数据引擎 对于SQLite 而言 dbName 指的是表的名字。数据名字为QNSQLiteNameKey
+///
 
 @interface QNDBHelper()
 @property (nonatomic, strong) NSString* currentDBName;
 @property (nonatomic, strong) LevelDB* levelDB;
+@property (nonatomic, strong) YTKKeyValueStore *sqliteDB;
+@property (nonatomic, strong) NSString *tableName;
 
 - (void)switchToDB:(NSString*)dbName;
 @end
@@ -43,14 +54,19 @@ static dispatch_queue_t QNCacheDBQueue = nil;
     return self;
 }
 
+#pragma mark - public
+
 - (id)getValueForKey:(NSString*)key fromeDB:(NSString*)dbName
 {
     NSAssert(key && [key isKindOfClass:[NSString class]], @"key is invalid");
     NSAssert(dbName && [dbName isKindOfClass:[NSString class]], @"dbName is invalid");
     __block id value = nil;
     dispatch_sync(QNCacheDBQueue, ^{
-        [self switchToDB:dbName];
-        value = self.levelDB[key];
+        if (kQNShouldSQLite == YES) {
+            [self _qn_getValueForKey:key fromeSQLiteDB:dbName];
+        }else {
+            [self _qn_getValueForKey:key fromeLevelDB:dbName];
+        }
     });
     return value;
 }
@@ -61,8 +77,11 @@ static dispatch_queue_t QNCacheDBQueue = nil;
     NSAssert(dbName && [dbName isKindOfClass:[NSString class]], @"dbName is invalid");
     NSAssert(value, @"value is not invalid");
     dispatch_async(QNCacheDBQueue, ^{
-        [self switchToDB:dbName];
-        [self.levelDB setValue:value forKey:key];
+        if (kQNShouldSQLite == YES) {
+            [self _qn_setValue:value forKey:key SQLiteDB:dbName];
+        }else {
+            [self _qn_setValue:value forKey:key LevelDB:dbName];
+        }
     });
 }
 
@@ -72,8 +91,11 @@ static dispatch_queue_t QNCacheDBQueue = nil;
     NSAssert(dbName && [dbName isKindOfClass:[NSString class]], @"dbName is invalid");
     
     dispatch_async(QNCacheDBQueue, ^{
-        [self switchToDB:dbName];
-        [self.levelDB removeObjectForKey:key];
+        if (kQNShouldSQLite == YES) {
+            [self _qn_removeValueForKey:key fromeSQLiteDB:dbName];
+        }else {
+            [self _qn_removeValueForKey:key fromeLevelDB:dbName];
+        }
     });
 }
 
@@ -86,16 +108,70 @@ static dispatch_queue_t QNCacheDBQueue = nil;
 #ifdef DEBUG
         //        NSLog(@"old count:%lu", (unsigned long)self.levelDB.allKeys.count);
 #endif
-        
-        //close and connect
-        [self.levelDB close];
-        _currentDBName = dbName;
-        self.levelDB = [[LevelDB alloc]initWithPath:[[TTLocalPathHelper libraryPath] stringByAppendingString:_currentDBName] andName:_currentDBName];
+        if (kQNShouldSQLite == YES) {
+            [self _qn_switchToSQLiteDB:dbName];
+        }else {
+            [self _qn_switchToLevelDB:dbName];
+        }
         
 #ifdef DEBUG
         //        NSLog(@"new count:%lu", (unsigned long)self.levelDB.allKeys.count);
 #endif
     }
+}
+
+#pragma mark - private
+
+- (void)_qn_switchToLevelDB:(NSString*)dbName
+{
+    [self.levelDB close];
+    _currentDBName = dbName;
+    self.levelDB = [[LevelDB alloc]initWithPath:[[[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingString:@"/"] stringByAppendingString:_currentDBName] andName:_currentDBName];
+}
+
+/// get
+- (void)_qn_switchToSQLiteDB:(NSString*)dbName
+{
+    _tableName = dbName;
+    self.sqliteDB = [[YTKKeyValueStore alloc] initDBWithName:QNSQLiteNameKey];
+    [self.sqliteDB createTableWithName:self.tableName];
+}
+
+- (id)_qn_getValueForKey:(NSString*)key fromeSQLiteDB:(NSString*)dbName
+{
+    [self switchToDB:dbName];
+    __block id value = nil;
+    value = self.levelDB[key];
+    return value;
+}
+
+- (id)_qn_getValueForKey:(NSString*)key fromeLevelDB:(NSString*)dbName
+{
+    __block id value = nil;
+     value = [self.sqliteDB getObjectById:key fromTable:self.tableName];
+    return value;
+}
+///set
+- (void)_qn_setValue:(id)value forKey:(NSString *)key SQLiteDB:(NSString*)dbName
+{
+    [self.sqliteDB putObject:value withId:key intoTable:dbName];
+}
+
+- (void)_qn_setValue:(id)value forKey:(NSString *)key LevelDB:(NSString*)dbName
+{
+    [self _qn_switchToLevelDB:dbName];
+    [self.levelDB setValue:value forKey:key];
+}
+///remove
+- (void)_qn_removeValueForKey:(NSString*)key fromeSQLiteDB:(NSString*)dbName
+{
+    [self.sqliteDB deleteObjectById:key fromTable:dbName];
+}
+
+- (void)_qn_removeValueForKey:(NSString*)key fromeLevelDB:(NSString*)dbName
+{
+    [self _qn_switchToLevelDB:dbName];
+    [self.levelDB removeObjectForKey:key];
 }
 
 @end

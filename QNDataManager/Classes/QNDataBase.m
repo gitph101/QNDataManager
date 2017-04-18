@@ -8,7 +8,6 @@
 
 #import "QNDataBase.h"
 #import "LevelDB.h"
-#import "TTLocalPathHelper.h"
 
 static QNDataBase* dataBase = nil;
 static dispatch_queue_t TTCacheDBQueue = nil;
@@ -28,7 +27,7 @@ static dispatch_queue_t TTCacheDBQueue = nil;
     dispatch_once(&onceToken, ^{
         if (!dataBase)
         {
-            TTCacheDBQueue = dispatch_queue_create("com.tt.cache.db", NULL);
+            TTCacheDBQueue = dispatch_queue_create("com.soufun.cache.db", NULL);
             dataBase = [QNDataBase new];
         }
     });
@@ -90,12 +89,14 @@ static dispatch_queue_t TTCacheDBQueue = nil;
         //close and connect
         [self.levelDB close];
         _currentDBName = dbName;
-        self.levelDB = [[LevelDB alloc]initWithPath:[[TTLocalPathHelper libraryPath] stringByAppendingString:_currentDBName] andName:_currentDBName];
+        self.levelDB = [[LevelDB alloc]initWithPath:[[[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingString:@"/"] stringByAppendingString:_currentDBName] andName:_currentDBName];
         
 #ifdef DEBUG
         //        NSLog(@"new count:%lu", (unsigned long)self.levelDB.allKeys.count);
 #endif
     }
 }
+
+
 
 @end

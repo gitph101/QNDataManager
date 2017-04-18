@@ -10,4 +10,15 @@
 
 @interface QNDiskCacheIndexModel : NSObject
 
+@property (nonatomic, strong) NSString* key;
+@property (nonatomic, assign) NSUInteger age;
+@property (nonatomic, assign) NSUInteger cost;
+@property (nonatomic, assign) NSUInteger createdTime;
+@property (nonatomic, assign) BOOL saveInDisk;
+
+- (NSString*)encodedString;
+- (NSData*)encodedData;
+
++ (instancetype)loadFromData:(NSData*)data;
+
 @end

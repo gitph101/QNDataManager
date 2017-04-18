@@ -1,0 +1,1 @@
+../../../../../QNDataManager/Classes/Category/NSData+JSON.h

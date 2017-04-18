@@ -1,1 +1,0 @@
-../../../../../QNDataManager/Classes/TTLocalPathHelper.h

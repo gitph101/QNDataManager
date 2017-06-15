@@ -33,14 +33,7 @@
               forKey: (NSString*) key
                  age: (NSUInteger) age;
 
-/**
- 把一个实现了ORM的对象塞进cache
- 
- @param item 现在是实现了YYModel协议的对象
- @param key key
- @param age 过期时间
- 
- */
+
 - (void) setORMItem: (id)item forKey:(NSString*)key age:(NSUInteger)age;
 
 /**

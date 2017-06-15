@@ -26,8 +26,7 @@
 
 + (instancetype)loadFromData:(NSData*)data
 {
-    if (!data)
-    {
+    if (!data){
         return nil;
     }
     NSString* string = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
@@ -43,5 +42,6 @@
     model.saveInDisk = saveInDisk;
     return model;
 }
+
 
 @end

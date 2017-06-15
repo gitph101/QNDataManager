@@ -2,8 +2,8 @@
 //  MTLModel+DiskCache.h
 //  GiftTalk
 //
-//  Created by Xiaoxuan Tang on 11/5/15.
-//  Copyright © 2015 TieTie Inc. All rights reserved.
+//  Created by 研究院01 on 17/4/14.
+// 
 //
 
 

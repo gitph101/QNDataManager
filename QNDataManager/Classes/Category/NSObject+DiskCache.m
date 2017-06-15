@@ -1,9 +1,9 @@
 //
 //  MTLModel+DiskCache.m
-//  GiftTalk
+//
 //
 //  Created by Xiaoxuan Tang on 11/5/15.
-//  Copyright © 2015 TieTie Inc. All rights reserved.
+// 
 //
 
 #import "NSObject+DiskCache.h"
@@ -16,9 +16,9 @@
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void) setfromCache:(BOOL)tt_fromCache
+- (void) setfromCache:(BOOL)fromCache
 {
-    objc_setAssociatedObject(self, @selector(tt_fromCache), @(tt_fromCache), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    objc_setAssociatedObject(self, @selector(fromCache), @(fromCache), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end

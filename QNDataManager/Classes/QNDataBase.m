@@ -13,10 +13,12 @@ static QNDataBase* dataBase = nil;
 static dispatch_queue_t TTCacheDBQueue = nil;
 
 @interface QNDataBase()
+
 @property (nonatomic, strong) NSString* currentDBName;
 @property (nonatomic, strong) LevelDB* levelDB;
 
 - (void)switchToDB:(NSString*)dbName;
+
 @end
 
 @implementation QNDataBase
@@ -32,14 +34,6 @@ static dispatch_queue_t TTCacheDBQueue = nil;
         }
     });
     return dataBase;
-}
-
-- (instancetype)init
-{
-    if (self = [super init])
-    {
-    }
-    return self;
 }
 
 - (id)getValueForKey:(NSString*)key fromeDB:(NSString*)dbName
@@ -83,7 +77,7 @@ static dispatch_queue_t TTCacheDBQueue = nil;
     if (![dbName isEqualToString:self.currentDBName])
     {
 #ifdef DEBUG
-        //        NSLog(@"old count:%lu", (unsigned long)self.levelDB.allKeys.count);
+        //   NSLog(@"old count:%lu", (unsigned long)self.levelDB.allKeys.count);
 #endif
         
         //close and connect
@@ -92,7 +86,7 @@ static dispatch_queue_t TTCacheDBQueue = nil;
         self.levelDB = [[LevelDB alloc]initWithPath:[[[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingString:@"/"] stringByAppendingString:_currentDBName] andName:_currentDBName];
         
 #ifdef DEBUG
-        //        NSLog(@"new count:%lu", (unsigned long)self.levelDB.allKeys.count);
+        //  NSLog(@"new count:%lu", (unsigned long)self.levelDB.allKeys.count);
 #endif
     }
 }

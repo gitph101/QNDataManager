@@ -12,11 +12,9 @@
 @implementation NSString (MD5)
 
 - (NSString *)MD5Hash {
-    
     CC_MD5_CTX md5;
     CC_MD5_Init (&md5);
     CC_MD5_Update (&md5, [self UTF8String], (CC_LONG) strlen([self UTF8String]));
-    
     unsigned char digest[CC_MD5_DIGEST_LENGTH];
     CC_MD5_Final (digest, &md5);
     NSString *s = [NSString stringWithFormat: @"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
@@ -30,7 +28,6 @@
                    digest[14], digest[15]];
     
     return s;
-    
 }
 
 

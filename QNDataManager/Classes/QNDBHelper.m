@@ -13,10 +13,9 @@
 
 //是否使用SQLite作为数据库引擎
 static BOOL kQNShouldSQLite = NO;
-
 static QNDBHelper* helper = nil;
 static dispatch_queue_t QNCacheDBQueue = nil;
-static NSString* const QNSQLiteNameKey = @"com.soufun.QNSQLiteNameKey";
+static NSString* const QNSQLiteNameKey = @"com.qn.QNSQLiteNameKey";
 
 ///
 /// 两套数据引擎 对于SQLite 而言 dbName 指的是表的名字。数据名字为QNSQLiteNameKey
@@ -37,24 +36,16 @@ static NSString* const QNSQLiteNameKey = @"com.soufun.QNSQLiteNameKey";
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        if (!helper)
-        {
-            QNCacheDBQueue = dispatch_queue_create("com.tt.cache.db", NULL);
+        if (!helper){
+            QNCacheDBQueue = dispatch_queue_create("com.qn.queue", NULL);
             helper = [QNDBHelper new];
         }
     });
     return helper;
 }
 
-- (instancetype)init
-{
-    if (self = [super init])
-    {
-    }
-    return self;
-}
+#pragma mark - Public
 
-#pragma mark - public
 
 - (id)getValueForKey:(NSString*)key fromeDB:(NSString*)dbName
 {
@@ -105,34 +96,28 @@ static NSString* const QNSQLiteNameKey = @"com.soufun.QNSQLiteNameKey";
     //if db is not same as current db
     if (![dbName isEqualToString:self.currentDBName])
     {
-#ifdef DEBUG
-        //        NSLog(@"old count:%lu", (unsigned long)self.levelDB.allKeys.count);
-#endif
         if (kQNShouldSQLite == YES) {
             [self _qn_switchToSQLiteDB:dbName];
         }else {
             [self _qn_switchToLevelDB:dbName];
         }
-        
-#ifdef DEBUG
-        //        NSLog(@"new count:%lu", (unsigned long)self.levelDB.allKeys.count);
-#endif
     }
 }
 
-#pragma mark - private
+#pragma mark - Private
+
 
 - (void)_qn_switchToLevelDB:(NSString*)dbName
 {
     [self.levelDB close];
-    _currentDBName = dbName;
+    self.currentDBName = dbName;
     self.levelDB = [[LevelDB alloc]initWithPath:[[[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingString:@"/"] stringByAppendingString:_currentDBName] andName:_currentDBName];
 }
 
 /// get
 - (void)_qn_switchToSQLiteDB:(NSString*)dbName
 {
-    _tableName = dbName;
+    self.tableName = dbName;
     self.sqliteDB = [[YTKKeyValueStore alloc] initDBWithName:QNSQLiteNameKey];
     [self.sqliteDB createTableWithName:self.tableName];
 }
